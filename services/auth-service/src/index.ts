@@ -2,9 +2,11 @@ import { createApp } from '@/app'
 import { createServer } from 'node:http'
 import { env } from './config/env'
 import { logger } from './utils/logger'
+import { connectToDatabase } from './db/sequelize'
 
 const main = async () => {
   try {
+    await connectToDatabase()
     const app = createApp()
     const server = createServer(app)
     const port = env.AUTH_SERVICE_PORT
