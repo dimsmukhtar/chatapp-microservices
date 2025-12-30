@@ -26,10 +26,8 @@ const main = async () => {
           server.close(() => process.exit(0))
         })
     }
-    if (env.NODE_ENV === 'production') {
-      process.on('SIGINT', shutdown)
-      process.on('SIGTERM', shutdown)
-    }
+    process.on('SIGINT', shutdown)
+    process.on('SIGTERM', shutdown)
   } catch (error) {
     logger.error({ error }, 'failed to start auth services')
     process.exit(1)

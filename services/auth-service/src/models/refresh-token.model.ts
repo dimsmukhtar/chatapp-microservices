@@ -6,17 +6,15 @@ export interface RefreshTokenAttributes {
   id: string
   userId: string
   tokenHash: string
-  expiresAt: string
-  revokedAt: Date
-  userAgent: string
-  ipAddress: string
-  createdAt: Date
-  updatedAt: Date
+  expiresAt: Date
+  revokedAt: Date | null
+  userAgent: string | null
+  ipAddress: string | null
 }
 
 export type RefreshTokenCreationAttributes = Optional<
   RefreshTokenAttributes,
-  'id' | 'createdAt' | 'updatedAt'
+  'id'
 >
 
 // rule Model generic sequelize =
@@ -30,12 +28,10 @@ export class RefreshToken
   declare id: string
   declare userId: string
   declare tokenHash: string
-  declare expiresAt: string
-  declare revokedAt: Date
-  declare userAgent: string
-  declare ipAddress: string
-  declare createdAt: Date
-  declare updatedAt: Date
+  declare expiresAt: Date
+  declare revokedAt: Date | null
+  declare userAgent: string | null
+  declare ipAddress: string | null
 }
 
 RefreshToken.init(
@@ -43,16 +39,21 @@ RefreshToken.init(
     id: {
       type: DataTypes.UUID,
       primaryKey: true,
+      allowNull: false,
       defaultValue: DataTypes.UUIDV4
     },
     userId: {
       type: DataTypes.UUID,
-      allowNull: false
+      allowNull: false,
+      references: {
+        model: 'user_credentials',
+        key: 'id'
+      },
+      onDelete: 'CASCADE'
     },
     tokenHash: {
-      type: DataTypes.STRING,
-      allowNull: false,
-      unique: true
+      type: DataTypes.STRING(512),
+      allowNull: false
     },
     expiresAt: {
       type: DataTypes.DATE,
@@ -67,21 +68,24 @@ RefreshToken.init(
       allowNull: true
     },
     ipAddress: {
-      type: DataTypes.STRING,
+      type: DataTypes.STRING(45),
       allowNull: true
-    },
-    createdAt: {
-      type: DataTypes.DATE,
-      allowNull: false,
-      defaultValue: DataTypes.NOW
-    },
-    updatedAt: {
-      type: DataTypes.DATE,
-      allowNull: false,
-      defaultValue: DataTypes.NOW
     }
   },
-  { sequelize, tableName: 'refresh_tokens' }
+  {
+    sequelize,
+    tableName: 'refresh_tokens',
+    indexes: [
+      {
+        unique: true,
+        name: 'refresh_token_unique_token_hash',
+        fields: ['token_hash']
+      },
+      { fields: ['user_id'] },
+      { fields: ['expires_at'] },
+      { fields: ['revoked_at'] }
+    ]
+  }
 )
 
 UserCredentials.hasMany(RefreshToken, {

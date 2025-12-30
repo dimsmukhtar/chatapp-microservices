@@ -1,0 +1,10 @@
+CREATE TABLE IF NOT EXISTS user_credentials (
+    id CHAR(36) NOT NULL,
+    email VARCHAR(255) NOT NULL,
+    password_hash VARCHAR(512) NOT NULL,
+    display_name VARCHAR(255) NOT NULL,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    PRIMARY KEY (id),
+    UNIQUE KEY user_credentials_unique_email (email)
+) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4

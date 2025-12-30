@@ -6,13 +6,11 @@ export interface UserCredentialsAttributes {
   email: string
   displayName: string
   passwordHash: string
-  createdAt: Date
-  updatedAt: Date
 }
 
 export type UserCredentialsCreationAttributes = Optional<
   UserCredentialsAttributes,
-  'id' | 'createdAt' | 'updatedAt'
+  'id'
 >
 
 // rule Model generic sequelize =
@@ -27,8 +25,6 @@ export class UserCredentials
   declare email: string
   declare displayName: string
   declare passwordHash: string
-  declare createdAt: Date
-  declare updatedAt: Date
 }
 
 UserCredentials.init(
@@ -36,37 +32,34 @@ UserCredentials.init(
     id: {
       type: DataTypes.UUID,
       primaryKey: true,
+      allowNull: false,
       defaultValue: DataTypes.UUIDV4
     },
     email: {
       type: DataTypes.STRING,
       allowNull: false,
-      unique: true,
       validate: {
         isEmail: true
       }
     },
     passwordHash: {
-      type: DataTypes.STRING,
+      type: DataTypes.STRING(512),
       allowNull: false
     },
     displayName: {
       type: DataTypes.STRING,
       allowNull: false
-    },
-    createdAt: {
-      type: DataTypes.DATE,
-      allowNull: false,
-      defaultValue: DataTypes.NOW
-    },
-    updatedAt: {
-      type: DataTypes.DATE,
-      allowNull: false,
-      defaultValue: DataTypes.NOW
     }
   },
   {
     sequelize,
-    tableName: 'user_credentials'
+    tableName: 'user_credentials',
+    indexes: [
+      {
+        unique: true,
+        name: 'user_credentials_unique_email',
+        fields: ['email']
+      }
+    ]
   }
 )

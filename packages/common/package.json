@@ -4,10 +4,9 @@
   "description": "common libarry/packages/method for other services so that they can use for their use case as dependencies",
   "private": true,
   "main": "dist/index.js",
-  "type": "module",
   "types": "dist/index.d.ts",
   "scripts": {
-    "build": "tsc --project tsconfig.json"
+    "build": "tsc -b"
   },
   "keywords": [],
   "author": "dimas mukhtar",

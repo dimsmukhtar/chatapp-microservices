@@ -2,7 +2,8 @@ import { Sequelize } from 'sequelize'
 import { env } from '@/config/env'
 import { logger } from '@/utils/logger'
 
-export const sequelize = new Sequelize(env.AUTH_DB_URL, {
+const AUTH_DB_URL = `mysql://${env.AUTH_DB_USER}:${env.AUTH_DB_PASSWORD}@${env.AUTH_DB_HOST}:${env.AUTH_DB_PORT}/${env.AUTH_DB_NAME}`
+export const sequelize = new Sequelize(AUTH_DB_URL, {
   dialect: 'mysql',
   logging:
     env.NODE_ENV === 'development'
@@ -12,7 +13,8 @@ export const sequelize = new Sequelize(env.AUTH_DB_URL, {
       : false,
   define: {
     underscored: true, // dengan ini yang properti defaultnya createdAt menjadi created_at
-    freezeTableName: true // utk mencegah sequelize mengubah nama tabel, jadi misal tabel User tidak menjadi Users, melainkan User tetapi User
+    freezeTableName: true, // utk mencegah sequelize mengubah nama tabel, jadi misal tabel User tidak menjadi Users, melainkan User tetapi User
+    timestamps: true
   }
 })
 

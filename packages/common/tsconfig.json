@@ -6,8 +6,9 @@
     "declaration": true,
     "declarationMap": true,
     "composite": true, // karena common akan di referensikan maka harus ada ini agar bisa menjadi dependency TS
-    "module": "ESNext",
-    "moduleResolution": "Node",
+    "target": "ES2020",
+    "module": "CommonJS",
+    "moduleResolution": "node",
     "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
