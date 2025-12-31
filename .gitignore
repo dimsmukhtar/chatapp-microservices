@@ -1,4 +1,5 @@
 node_modules/
+keys/
 .pnpm-store/
 dist/
 *.tsbuildinfo

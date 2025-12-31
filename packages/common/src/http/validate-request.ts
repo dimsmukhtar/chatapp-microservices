@@ -13,14 +13,6 @@ export interface RequestValidationSchemas {
   query?: Schema
 }
 
-const formatedError = (error: ZodError) =>
-  error.issues.map((issue) => ({
-    path: issue.path.join('.'),
-    message: issue.message,
-    input: issue.input,
-    code: issue.code
-  }))
-
 export const validateRequest = (schemas: RequestValidationSchemas) => {
   return (req: Request, _res: Response, next: NextFunction) => {
     try {
@@ -39,12 +31,23 @@ export const validateRequest = (schemas: RequestValidationSchemas) => {
       next()
     } catch (error) {
       if (error instanceof ZodError) {
-        const messages: string = error.issues.map((e) => e.message).join(', ')
-        return next(
-          new BadRequestError(messages, {
-            details: formatedError(error)
-          })
+        const requiredIssues = error.issues.filter(
+          (issue) =>
+            issue.code === 'invalid_type' &&
+            issue.message.includes('received undefined')
         )
+
+        if (requiredIssues.length > 0) {
+          const fields = requiredIssues.map((i) => i.path.join('.')).join(', ')
+
+          return next(
+            new BadRequestError(
+              `Dude ${fields} is required, so better you fill it`
+            )
+          )
+        }
+        const messages = error.issues.map((e) => e.message).join(', ')
+        return next(new BadRequestError(messages))
       }
       next(error)
     }

@@ -1,6 +1,7 @@
 import express, { Request, Response, Router, type Application } from 'express'
 import cors from 'cors'
 import helmet from 'helmet'
+import cookieParser from 'cookie-parser'
 import { errorHandler } from '@/middlewares/error-handler'
 import { closeDatabase, connectToDatabase, sequelize } from './db/sequelize'
 import { logger } from './utils/logger'
@@ -28,12 +29,13 @@ export class App {
       })
     )
     this.app.use(helmet())
+    this.app.use(cookieParser())
     this.app.use(express.json())
     this.app.use(express.urlencoded({ extended: true }))
   }
 
   private initializeRoutes(): void {
-    this.app.use('/users', this.routes)
+    this.app.use('/auth', this.routes)
   }
 
   private initializeErrorHandling(): void {

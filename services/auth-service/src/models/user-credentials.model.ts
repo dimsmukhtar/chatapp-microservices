@@ -25,6 +25,9 @@ export class UserCredentials
   declare email: string
   declare displayName: string
   declare passwordHash: string
+
+  public readonly createdAt!: Date
+  public readonly updatedAt!: Date
 }
 
 UserCredentials.init(

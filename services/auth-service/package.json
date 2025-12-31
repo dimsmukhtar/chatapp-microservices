@@ -6,15 +6,21 @@
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
-    "build": "tsc -b && tsc-alias && cp -r src/migrations/tables dist/migrations",
-    "dev": "tsx watch ./src/index.ts",
+    "build": "tsc -b && tsc-alias && cp -r src/migrations/tables dist/migrations && cp -r src/keys dist/keys",
+    "dev": "nodemon",
     "start": "node dist/index.js",
     "lint": "eslint \"src/**/*.ts\"",
     "typecheck": "tsc --noEmit --project tsconfig.json",
     "test": "echo \"No tests yet\"",
     "format": "prettier --check \"src/**/*.ts\"",
     "migrate": "node ./dist/scripts/executeMigration.js",
-    "migrate:dev": "tsx ./src/scripts/executeMigration.ts"
+    "migrate:dev": "tsx ./src/scripts/executeMigration.ts",
+    "gen:private:accesstoken": "mkdir -p src/keys && openssl genrsa -out src/keys/accessTokenPrivateKey.pem 2048",
+    "gen:public:accesstoken": "mkdir -p src/keys && openssl rsa -in src/keys/accessTokenPrivateKey.pem -pubout -out src/keys/accessTokenPublicKey.pem",
+    "gen:private:accesstoken:b64": "base64 -w0 src/keys/accessTokenPrivateKey.pem > src/keys/accessTokenPrivateKey.b64",
+    "gen:public:accesstoken:b64": "base64 -w0 src/keys/accessTokenPublicKey.pem > src/keys/accessTokenPublicKey.b64",
+    "gen:keys": "pnpm run gen:private:accesstoken && pnpm run gen:public:accesstoken && pnpm run gen:private:accesstoken:b64 && pnpm run gen:public:accesstoken:b64",
+    "gen:refreshtoken:secret": "openssl rand -hex 32"
   },
   "keywords": [],
   "author": "",
@@ -22,6 +28,7 @@
   "packageManager": "pnpm@10.25.0",
   "dependencies": {
     "argon2": "^0.44.0",
+    "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
     "dotenv": "^17.2.3",
     "express": "^5.2.1",
@@ -32,6 +39,7 @@
   },
   "devDependencies": {
     "@chatapp/common": "workspace:^",
+    "@types/cookie-parser": "^1.4.10",
     "@types/cors": "^2.8.19",
     "@types/express": "^5.0.6",
     "@types/jsonwebtoken": "^9.0.10",

@@ -1,21 +1,37 @@
-// import { Op } from 'sequelize'
-// import { UserCredentials } from '@/models'
-// import { AuthResponse, RegisterInput } from '@/types/auth'
-// import { HttpError } from '@chatapp/common'
-// import { sequelize } from '@/db/sequelize'
+import { Op } from 'sequelize'
+import { UserCredentials } from '@/models'
+import { LoginInput, RegisterInput } from '@/types/auth'
+import { BadRequestError, ConflictError } from '@chatapp/common'
+import { sequelize } from '@/db/sequelize'
+import { hashPassword } from '@/utils/token'
 
-// export const register = async (input: RegisterInput): Promise<AuthResponse> => {
-//   const existingUser = await UserCredentials.findOne({
-//     where: { email: { [Op.eq]: input.email } }
-//   })
-//   if (existingUser) {
-//     throw new HttpError(409, 'user with this email already exists')
-//   }
+export class AuthService {
+  constructor(private readonly model: typeof UserCredentials) {}
 
-//   const transaction = await sequelize.transaction()
-//   try {
-//     const passwordHash = await
-//   } catch (error) {
+  public async register(input: RegisterInput): Promise<UserCredentials> {
+    const existing = await this.model.findOne({
+      where: { email: input.email }
+    })
 
-//   }
-// }
+    if (existing) {
+      throw new ConflictError(`user with email ${input.email} already exists`)
+    }
+
+    const passwordHash = await hashPassword(input.password)
+    const user = await this.model.create({
+      email: input.email,
+      displayName: input.displayName,
+      passwordHash
+    })
+    const userData = {
+      id: user.id,
+      email: user.email,
+      displayname: user.displayName,
+      createdAt: user.createdAt.toISOString()
+    }
+    // publish event UserRegistered
+    return user
+  }
+
+  public async login(input: LoginInput) {}
+}
