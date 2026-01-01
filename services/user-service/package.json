@@ -10,7 +10,9 @@
     "build": "tsc -b && tsc-alias && cp -r src/migrations/tables dist/migrations",
     "dev": "nodemon",
     "start": "node dist/index.js",
-    "typecheck": "tsc --noEmit --project tsconfig.json"
+    "typecheck": "tsc --noEmit --project tsconfig.json",
+    "migrate": "node ./dist/scripts/executeMigration.js",
+    "migrate:dev": "tsx ./src/scripts/executeMigration.ts"
   },
   "keywords": [],
   "author": "",

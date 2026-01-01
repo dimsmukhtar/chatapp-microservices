@@ -30,6 +30,8 @@ export class Migrate {
       password: this.password,
       database: 'postgres'
     })
+
+    await this.client.connect()
   }
 
   async createDatabaseIfNotExists(): Promise<void> {
@@ -41,9 +43,9 @@ export class Migrate {
 
     if (result.rowCount === 0) {
       await client.query(`CREATE DATABASE "${this.dbName}"`)
-      logger.info(`✅ Database '${this.dbName}' created`)
+      logger.info(`Database '${this.dbName}' created`)
     } else {
-      logger.info(`✅ Database '${this.dbName}' created`)
+      logger.info(`Database '${this.dbName}' already exists`)
     }
     await client.end()
   }
@@ -58,16 +60,23 @@ export class Migrate {
 
     await this.client.connect()
     const client = this.getClient()
-    try {
-      await client.query('BEGIN')
-      await client.query(
-        fs.readFileSync(path.join(__dirname, 'tables', 'users.sql'), 'utf8')
-      )
-      await client.query('COMMIT')
-      logger.info('users table successfully created')
-    } catch (error) {
-      await client.query('ROLLBACK')
-      throw error
+
+    const files = fs
+      .readdirSync(path.join(__dirname, 'tables'))
+      .filter((file) => file.endsWith('.sql'))
+      .sort()
+
+    for (const file of files) {
+      try {
+        await client.query('BEGIN')
+        await client.query(
+          fs.readFileSync(path.join(__dirname, 'tables', file), 'utf8')
+        )
+        await client.query('COMMIT')
+      } catch (error) {
+        await client.query('ROLLBACK')
+        throw error
+      }
     }
   }
 
