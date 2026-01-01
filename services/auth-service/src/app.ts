@@ -6,6 +6,11 @@ import { closeDatabase, connectToDatabase, sequelize } from './db/sequelize'
 import { logger } from './utils/logger'
 import { Env } from './config/env'
 import { createInternalAuthMiddleware } from '@chatapp/common'
+import { initModels } from './models'
+import {
+  closeRabbitAndPublisher,
+  connectToRabbitAndInitPublisher
+} from './messaging/event-publishing'
 
 export class App {
   private app: Application
@@ -61,6 +66,8 @@ export class App {
   public async startServer(): Promise<void> {
     try {
       await connectToDatabase()
+      await initModels() // development purposes
+      await connectToRabbitAndInitPublisher()
       this.server = this.app.listen(this.env.AUTH_SERVICE_PORT, () => {
         logger.info(
           `auth service is running on port ${this.env.AUTH_SERVICE_PORT}`
@@ -91,6 +98,7 @@ export class App {
         }
 
         await closeDatabase()
+        await closeRabbitAndPublisher()
         logger.info('auth server shutdown gracefully')
       } catch (error) {
         logger.error({

@@ -17,7 +17,8 @@ const envSchema = z.object({
   JWT_ACCESS_TOKEN_PUBLIC_KEY: z.string().min(1),
   JWT_ACCESS_TOKEN_EXPIRES_IN: z.string().default('1d'),
   REFRESH_TOKEN_SECRET: z.string().min(1),
-  INTERNAL_AUTH_TOKEN: z.string().min(1)
+  INTERNAL_AUTH_TOKEN: z.string().min(1),
+  RABBITMQ_URL: z.string().min(1)
 })
 
 type EnvType = z.infer<typeof envSchema>
