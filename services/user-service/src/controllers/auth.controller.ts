@@ -1,5 +1,5 @@
 import { RequestHandler } from 'express'
-import { AuthService } from '@/services/auth.service'
+import { AuthService } from '@/services/user.service'
 import { LoginInput, RegisterInput } from '@/types/user'
 import { asyncWrapper } from '@chatapp/common'
 

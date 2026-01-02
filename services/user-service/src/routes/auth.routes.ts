@@ -1,6 +1,6 @@
 import { AuthController } from '@/controllers/auth.controller'
 import { UserCredentials } from '@/models'
-import { AuthService } from '@/services/auth.service'
+import { AuthService } from '@/services/user.service'
 import { validateRequest } from '@chatapp/common'
 import { Router } from 'express'
 import { AuthSchema } from '@/validations/auth.schemas'
