@@ -7,6 +7,7 @@ import { logger } from './utils/logger'
 import { Env } from './config/env'
 import { createInternalAuthMiddleware } from '@chatapp/common'
 import { initModels } from './models'
+import { startAuthUserRegisterConsumer } from './messaging/consumers/auth-user-registered.consumer'
 
 export class App {
   private app: Application
@@ -66,7 +67,8 @@ export class App {
   public async startServer(): Promise<void> {
     try {
       await connectToDatabase()
-      // await initModels() // development purposes
+      await initModels() // development purposes
+      await startAuthUserRegisterConsumer()
       this.server = this.app.listen(this.env.USER_SERVICE_PORT, () => {
         logger.info(
           `user service is running on port ${this.env.USER_SERVICE_PORT}`
