@@ -8,6 +8,7 @@ import { Env } from './config/env'
 import { createInternalAuthMiddleware } from '@chatapp/common'
 import { initModels } from './models'
 import { startAuthUserRegisterConsumer } from './messaging/consumers/auth-user-registered.consumer'
+import { closeRabbit, getRabbitChannel } from './utils/rabbitmq'
 
 export class App {
   private app: Application
@@ -62,6 +63,15 @@ export class App {
         res.status(500).json({ message: 'USER POSTGRESQL DATABASE Unhealthy' })
       }
     })
+
+    this.app.get('/health/rabbit', async (_, res) => {
+      try {
+        await getRabbitChannel()
+        res.status(200).json({ message: 'RABBITMQ OK' })
+      } catch (error) {
+        res.status(500).json({ message: 'RABBITMQ Unhealthy' })
+      }
+    })
   }
 
   public async startServer(): Promise<void> {
@@ -107,6 +117,7 @@ export class App {
         }
 
         await closeDatabase()
+        await closeRabbit()
         clearTimeout(forceExit)
         logger.info('user server shutdown gracefully')
         process.exit(0)

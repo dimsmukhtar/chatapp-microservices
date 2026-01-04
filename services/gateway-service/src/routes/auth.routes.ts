@@ -26,6 +26,10 @@ export class Routes {
       '/health/db',
       this.authController.getAuthDatabaseHealthHandler
     )
+    this.routes.get(
+      '/health/rabbit',
+      this.authController.getAuthRabbitHealthHandler
+    )
     this.routes.post(
       '/register',
       validateRequest({ body: AuthSchema.registerSchema }),

@@ -8,6 +8,7 @@ import { consumer } from '../rabbit-consumer'
 import { Users } from '@/models'
 import { UserRepository } from '@/repositores/user.repository'
 import { UserService } from '@/services/user.service'
+import { logger } from '@/utils/logger'
 
 const userRepository = new UserRepository(Users)
 const userService = new UserService(userRepository)
@@ -18,6 +19,7 @@ export const startAuthUserRegisterConsumer = async () => {
     queue: 'user-service.auth-events',
     routingKey: AUTH_USER_REGISTERED_ROUTING_KEY,
     handler: async (event) => {
+      logger.info('Recieving message from rabbitmq', event)
       await userService.upsertUserFromAuthEvent(event.payload)
     }
   })

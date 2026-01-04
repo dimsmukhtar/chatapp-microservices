@@ -5,6 +5,7 @@ import {
 } from '@chatapp/common'
 
 import { publish } from '../rabbit-publisher'
+import { logger } from '@/utils/logger'
 
 export const publishUserRegistered = async (
   payload: AuthUserRegisteredPayload
@@ -14,4 +15,5 @@ export const publishUserRegistered = async (
     routingKey: AUTH_USER_REGISTERED_ROUTING_KEY,
     message: payload
   })
+  logger.info('Publishing a message to rabbit', payload)
 }

@@ -19,6 +19,13 @@ export class AuthController {
       res.status(200).json(response)
     }
   )
+
+  public getAuthRabbitHealthHandler: RequestHandler = asyncWrapper(
+    async (req, res) => {
+      const response = await this.authProxyService.authRabbitServiceHealth()
+      res.status(200).json(response)
+    }
+  )
   public registerHandler: RequestHandler = asyncWrapper(async (req, res) => {
     const payload = req.body as RegisterPayload
     const response = await this.authProxyService.register(payload)

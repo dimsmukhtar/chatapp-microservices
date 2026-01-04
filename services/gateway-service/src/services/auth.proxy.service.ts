@@ -33,6 +33,18 @@ export class AuthProxyService {
     }
   }
 
+  async authRabbitServiceHealth() {
+    try {
+      const response = await this.authClient.get(
+        '/health/rabbit',
+        this.authHeader
+      )
+      return response.data
+    } catch (e) {
+      return this.handleAxiosError(e)
+    }
+  }
+
   async register(payload: RegisterPayload) {
     try {
       const response = await this.authClient.post(
