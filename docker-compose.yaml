@@ -8,6 +8,28 @@ services:
     ports:
       - '${RABBITMQ_PORT:-5672}:5672'
       - '${RABBITMQ_MANAGEMENT_PORT:-15672}:15672'
+    restart: unless-stopped
+    volumes:
+      - chatapp-rabbitmq-data:/var/lib/rabbitmq
+    networks:
+      - chatapp-network
+  chatapp-redis:
+    image: redis:8.2
+    container_name: chatapp-redis
+    command: >
+      sh -c "redis-server --requirepass $${REDIS_PASSWORD} --appendonly yes"
+    environment:
+      REDIS_HOST: ${REDIS_HOST:-chatapp-redis}
+      REDIS_PORT: ${REDIS_PORT:-6379}
+      REDIS_PASSWORD: ${REDIS_PASSWORD:-rediss}
+    volumes:
+      - chatapp-redis-data:/data
+    restart: unless-stopped
+    healthcheck:
+      test: ['CMD', 'redis-cli', '-a', '$${REDIS_PASSWORD}', 'ping']
+      interval: 10s
+      timeout: 5s
+      retries: 5
     networks:
       - chatapp-network
   chatapp-auth-mysql:
@@ -19,6 +41,7 @@ services:
       MYSQL_PASSWORD: ${AUTH_DB_PASSWORD:-chatapp_auth_password}
       MYSQL_ROOT_PASSWORD: ${AUTH_DB_ROOT_PASSWORD:-root_password}
     command: ['mysqld', '--default-authentication-plugin=mysql_native_password']
+    restart: unless-stopped
     ports:
       - '${AUTH_DB_PORT:-3306}:3306'
     volumes:
@@ -32,6 +55,7 @@ services:
       POSTGRES_DB: ${USER_DB_NAME:-chatapp_user_service}
       POSTGRES_USER: ${USER_DB_USER:-chatapp_user_user}
       POSTGRES_PASSWORD: ${USER_DB_PASSWORD:-chatapp_user_password}
+    restart: unless-stopped
     ports:
       - '${USER_DB_PORT:-5432}:5432'
     volumes:
@@ -39,6 +63,10 @@ services:
     networks:
       - chatapp-network
 volumes:
+  chatapp-rabbitmq-data:
+    name: chatapp-rabbitmq-data
+  chatapp-redis-data:
+    name: chatapp-redis-data
   chatapp-auth-mysql-data:
     name: chatapp-auth-mysql-data
   chatapp-user-postgresql-data:

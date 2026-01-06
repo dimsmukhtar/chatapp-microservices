@@ -1,7 +1,7 @@
 import { RequestHandler } from 'express'
 import { AuthProxyService } from '@/services/auth.proxy.service'
 import { asyncWrapper } from '@chatapp/common'
-import { RegisterPayload } from '@/types/auth'
+import { LoginPayload, RegisterPayload } from '@/types/auth'
 
 export class AuthController {
   constructor(private readonly authProxyService: AuthProxyService) {}
@@ -31,4 +31,19 @@ export class AuthController {
     const response = await this.authProxyService.register(payload)
     res.status(201).json(response)
   })
+
+  public loginHandler: RequestHandler = asyncWrapper(async (req, res) => {
+    const payload = req.body as LoginPayload
+    const response = await this.authProxyService.login(payload)
+    res.status(200).json(response)
+  })
+
+  public refreshTokenHandler: RequestHandler = asyncWrapper(
+    async (req, res) => {
+      const response = await this.authProxyService.refreshToken(
+        req.body.refreshToken
+      )
+      res.status(200).json(response)
+    }
+  )
 }

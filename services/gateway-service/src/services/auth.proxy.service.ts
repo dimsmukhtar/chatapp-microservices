@@ -5,7 +5,7 @@ import {
   InternalServerError,
   ServiceErrorRespose
 } from '@chatapp/common'
-import { RegisterPayload } from '@/types/auth'
+import { LoginPayload, RegisterPayload } from '@/types/auth'
 
 export class AuthProxyService {
   private readonly authHeader: Object = {
@@ -50,6 +50,32 @@ export class AuthProxyService {
       const response = await this.authClient.post(
         '/auth/register',
         payload,
+        this.authHeader
+      )
+      return response.data
+    } catch (e) {
+      return this.handleAxiosError(e)
+    }
+  }
+
+  async login(payload: LoginPayload) {
+    try {
+      const response = await this.authClient.post(
+        '/auth/login',
+        payload,
+        this.authHeader
+      )
+      return response.data
+    } catch (e) {
+      return this.handleAxiosError(e)
+    }
+  }
+
+  async refreshToken(refreshToken: string) {
+    try {
+      const response = await this.authClient.post(
+        '/auth/refresh',
+        { refreshToken },
         this.authHeader
       )
       return response.data

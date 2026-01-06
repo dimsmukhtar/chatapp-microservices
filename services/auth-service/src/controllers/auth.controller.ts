@@ -13,4 +13,28 @@ export class AuthController {
       message: 'congrats my homie, you registered successfully'
     })
   })
+
+  public loginHandler: RequestHandler = asyncWrapper(async (req, res) => {
+    const payload = req.body as LoginInput
+    const { accessToken, refreshToken } = await this.service.login(payload, req)
+    res.status(200).json({
+      success: true,
+      message: 'congrats mate, your login is success',
+      accessToken,
+      refreshToken
+    })
+  })
+
+  public refreshToken: RequestHandler = asyncWrapper(async (req, res) => {
+    const { accessToken, refreshToken } = await this.service.refreshToken(
+      req.body.refreshToken,
+      req
+    )
+    res.status(200).json({
+      success: true,
+      message: 'congrats mate, your refresh token rotate is success',
+      accessToken,
+      refreshToken
+    })
+  })
 }

@@ -1,5 +1,5 @@
 import { AuthController } from '@/controllers/auth.controller'
-import { UserCredentials } from '@/models'
+import { RefreshTokens, UserCredentials } from '@/models'
 import { AuthService } from '@/services/auth.service'
 import { validateRequest } from '@chatapp/common'
 import { Router } from 'express'
@@ -10,7 +10,7 @@ export class Routes {
   private readonly authController: AuthController
   constructor(public readonly routes: Router) {
     this.routes = Router()
-    this.authService = new AuthService(UserCredentials)
+    this.authService = new AuthService(UserCredentials, RefreshTokens)
     this.authController = new AuthController(this.authService)
     this.initializeRoutes()
   }
@@ -19,6 +19,16 @@ export class Routes {
       '/register',
       validateRequest({ body: AuthSchema.registerSchema.shape.body }),
       this.authController.registerHandler
+    )
+    this.routes.post(
+      '/login',
+      validateRequest({ body: AuthSchema.loginSchema.shape.body }),
+      this.authController.loginHandler
+    )
+    this.routes.post(
+      '/refresh',
+      validateRequest({ body: AuthSchema.refreshSchema.shape.body }),
+      this.authController.refreshToken
     )
   }
 }

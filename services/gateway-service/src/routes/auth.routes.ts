@@ -35,5 +35,17 @@ export class Routes {
       validateRequest({ body: AuthSchema.registerSchema }),
       this.authController.registerHandler
     )
+
+    this.routes.post(
+      '/login',
+      validateRequest({ body: AuthSchema.loginSchema }),
+      this.authController.loginHandler
+    )
+
+    this.routes.post(
+      '/refresh',
+      validateRequest({ body: AuthSchema.refreshSchema }),
+      this.authController.refreshTokenHandler
+    )
   }
 }

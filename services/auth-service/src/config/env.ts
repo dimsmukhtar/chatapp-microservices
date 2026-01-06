@@ -18,7 +18,10 @@ const envSchema = z.object({
   JWT_ACCESS_TOKEN_EXPIRES_IN: z.string().default('1d'),
   REFRESH_TOKEN_SECRET: z.string().min(1),
   INTERNAL_API_TOKEN: z.string().min(1),
-  RABBITMQ_URL: z.string().min(1)
+  RABBITMQ_URL: z.string().min(1),
+  REDIS_PASSWORD: z.string().min(1),
+  REDIS_HOST: z.string().min(1),
+  REDIS_PORT: z.coerce.number().int().min(1).default(6379)
 })
 
 type EnvType = z.infer<typeof envSchema>

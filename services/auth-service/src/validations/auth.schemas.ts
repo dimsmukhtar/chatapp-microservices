@@ -30,7 +30,9 @@ export class AuthSchema {
 
   static refreshSchema = z.object({
     body: z.object({
-      refreshToken: z.string()
+      refreshToken: z.string().min(6, {
+        error: 'Dude please include the refresh token'
+      })
     })
   })
 }

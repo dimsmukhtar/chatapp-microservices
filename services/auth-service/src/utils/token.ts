@@ -8,6 +8,13 @@ export const hashPassword = async (password: string): Promise<string> => {
   return argon2.hash(password)
 }
 
+export const comparePassword = async (
+  userHashPassword: string,
+  password: string
+): Promise<boolean> => {
+  return argon2.verify(userHashPassword, password)
+}
+
 export const generateRefreshToken = () => {
   return crypto.randomBytes(REFRESH_TOKEN_BYTES).toString('hex')
 }

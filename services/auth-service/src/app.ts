@@ -91,7 +91,7 @@ export class App {
 
   private setupGracefulShutdown(): void {
     const signals: NodeJS.Signals[] = ['SIGINT', 'SIGTERM', 'SIGQUIT']
-    const FORCE_EXIT_TIMEOUT = 10_000
+    const FORCE_EXIT_TIMEOUT = 10_000 // 10 minutes
 
     const shutdown = async (signal: NodeJS.Signals) => {
       logger.warn(`recievied ${signal}, shutting down...`)
@@ -99,7 +99,7 @@ export class App {
       const forceExit = setTimeout(() => {
         logger.error('Force shutdown due to timeout')
         process.exit(1)
-      }, FORCE_EXIT_TIMEOUT).unref()
+      }, FORCE_EXIT_TIMEOUT).unref() // if 10 minutes server, database, rabbit doesnt shutdown, freaking force to shutdoown the server
       try {
         if (this.server) {
           await new Promise<void>((resolve, reject) => {
@@ -112,7 +112,7 @@ export class App {
 
         await closeDatabase()
         await closeRabbit()
-        clearTimeout(forceExit)
+        clearTimeout(forceExit) // just for clearing setTimeout force shutdown
         logger.info('auth server shutdown gracefully')
         process.exit(0)
       } catch (error) {
